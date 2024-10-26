@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RetailerAPI.Data;
 using RetailerAPI.Models.Domain;
 using RetailerAPI.Models.DTO;
@@ -18,9 +19,9 @@ namespace RetailerAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var retailersDomain = dbContext.Retailers.ToList();
+            var retailersDomain = await dbContext.Retailers.ToListAsync();
 
             var retailersDto=new List<RetailerDto>();
 
@@ -42,9 +43,9 @@ namespace RetailerAPI.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById([FromRoute] Guid id) 
+        public async Task<IActionResult> GetById([FromRoute] Guid id) 
         {
-            var retailerDomain = dbContext.Retailers.FirstOrDefault(x=>x.Id==id);
+            var retailerDomain = await dbContext.Retailers.FirstOrDefaultAsync(x=>x.Id==id);
 
             if (retailerDomain == null)
             {
@@ -64,7 +65,7 @@ namespace RetailerAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] AddRetailerRequestDto addRetailerRequestDto )
+        public async Task<IActionResult> Create([FromBody] AddRetailerRequestDto addRetailerRequestDto )
         {
             var retailerDomainModel = new Retailer
             {
@@ -74,8 +75,8 @@ namespace RetailerAPI.Controllers
                 Email = addRetailerRequestDto.Email
             };
 
-            dbContext.Retailers.Add(retailerDomainModel);
-            dbContext.SaveChanges();
+            await dbContext.Retailers.AddAsync(retailerDomainModel);
+            await dbContext.SaveChangesAsync();
 
             var retailerDto = new RetailerDto
             {
@@ -91,9 +92,9 @@ namespace RetailerAPI.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRetailerRequestDto updateRetailerRequestDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRetailerRequestDto updateRetailerRequestDto)
         {
-            var retailerDomainModel = dbContext.Retailers.FirstOrDefault(x => x.Id == id);
+            var retailerDomainModel = await dbContext.Retailers.FirstOrDefaultAsync(x => x.Id == id);
 
             if (retailerDomainModel == null)
             {
@@ -104,7 +105,7 @@ namespace RetailerAPI.Controllers
             retailerDomainModel.Phone = updateRetailerRequestDto.Phone;
             retailerDomainModel.Email= updateRetailerRequestDto.Email;
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             var retailerDto= new RetailerDto
             {
@@ -121,9 +122,9 @@ namespace RetailerAPI.Controllers
         [HttpDelete]
         [Route("{id:Guid}")]
 
-        public IActionResult Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var retailerDomainModel = dbContext.Retailers.FirstOrDefault(x => x.Id == id);
+            var retailerDomainModel = await dbContext.Retailers.FirstOrDefaultAsync(x => x.Id == id);
 
             if(retailerDomainModel == null)
             {
@@ -131,7 +132,7 @@ namespace RetailerAPI.Controllers
             }
 
             dbContext.Retailers.Remove(retailerDomainModel);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             var retailerDto = new RetailerDto
             {
