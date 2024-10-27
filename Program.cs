@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RetailerAPI.Data;
+using RetailerAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<RetailerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("RetailerConnectionString")));
+
+builder.Services.AddScoped<IRetailerRepository, SQLRetailerRepository>();
 
 var app = builder.Build();
 
